@@ -1,0 +1,48 @@
+version: '3.4'
+
+services:
+  apigateway.host:
+    image: ${DOCKER_REGISTRY-}apigatewayhost
+    build:
+      context: .
+      dockerfile: src/ApiGateway.Host/Dockerfile
+    ports:
+      - "5000:8000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - redis
+      - wiremock
+    networks:
+      - gateway-net
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - gateway-net
+
+  wiremock:
+    image: wiremock/wiremock:3.3.1
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./infra/wiremock/mappings:/home/wiremock/mappings
+    command: ["--verbose"]
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0
+    ports:
+      - "8080:8080"
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    command: ["start-dev"]
+    networks: 
+      - gateway-net
+
+networks:
+  gateway-net:
+    driver: bridge
+
