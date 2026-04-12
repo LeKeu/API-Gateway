@@ -26,8 +26,9 @@ services:
   wiremock:
     image: wiremock/wiremock:3.3.1
     ports:
-      - "8081:8080"
-    volumes:
+      - "8081:8080" # lembrar que a porta da esquerda é a minha! a q eu vou digitar no postan. eu sempre confundo
+    volumes: # nesse caso, o volume não é usado para persist~encia. 
+         #isso auqi tá me falando que o caminho de pasta na esquerda do : vai aparecer como o lado direito dentro do contaiber
       - ./infra/wiremock/mappings:/home/wiremock/mappings
     command: ["--verbose"]
 
