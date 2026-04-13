@@ -5,8 +5,10 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <DockerPublishLocally>False</DockerPublishLocally>
     <ProjectGuid>543324cd-742e-4ea2-88fb-18078240c322</ProjectGuid>
-    <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
-    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/weatherforecast</DockerServiceUrl>
+
+	  <DockerLaunchAction>None</DockerLaunchAction>
+	  <DockerServiceUrl></DockerServiceUrl>
+	  
     <DockerServiceName>apigateway.host</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>

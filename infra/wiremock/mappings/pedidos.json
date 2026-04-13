@@ -1,0 +1,26 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPattern": "/api/pedidos.*"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "data": [
+        {
+          "id": 101,
+          "produto": "Produto Alpha",
+          "status": "enviado"
+        },
+        {
+          "id": 102,
+          "produto": "Produto Beta",
+          "status": "pendente"
+        }
+      ]
+    }
+  }
+}

@@ -1,5 +1,3 @@
-version: '3.4'
-
 services:
   apigateway.host:
     image: ${DOCKER_REGISTRY-}apigatewayhost
@@ -7,7 +5,7 @@ services:
       context: .
       dockerfile: src/ApiGateway.Host/Dockerfile
     ports:
-      - "5000:8000"
+      - "5000:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
@@ -19,18 +17,20 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "6381:6379"
     networks:
       - gateway-net
 
   wiremock:
     image: wiremock/wiremock:3.3.1
     ports:
-      - "8081:8080" # lembrar que a porta da esquerda é a minha! a q eu vou digitar no postan. eu sempre confundo
-    volumes: # nesse caso, o volume não é usado para persist~encia. 
-         #isso auqi tá me falando que o caminho de pasta na esquerda do : vai aparecer como o lado direito dentro do contaiber
+      - "8081:8080" # lembrar que a porta da esquerda a minha! a q eu vou digitar no postan. eu sempre confundo
+    volumes: # nesse caso, o volume nao eh usado para persistencia. 
+         #isso auqi ta me falando que o caminho de pasta na esquerda do : vai aparecer como o lado direito dentro do contaiber
       - ./infra/wiremock/mappings:/home/wiremock/mappings
-    command: ["--verbose"]
+    command: ["--verbose"] #sobreescrevendo o comando padrao e usano o verbose pra escrever no terminal cada request
+    networks:
+      - gateway-net
 
   keycloak:
     image: quay.io/keycloak/keycloak:23.0
@@ -44,6 +44,7 @@ services:
       - gateway-net
 
 networks:
-  gateway-net:
+  gateway-net: # por padrao cada ocntainer eh isolado. o bridge cria tipo uma rede virtual privaada onde todos os containers que estaoo nela consigam se comunicar
     driver: bridge
+    #por isso eu escrevo "http://wiremock:8080" e nao "http://localhost:8080"
 
