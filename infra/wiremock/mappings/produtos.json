@@ -1,0 +1,26 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPattern": "/api/produtos.*"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "data": [
+        {
+          "id": 1,
+          "nome": "Produto A",
+          "preco": 49.90
+        },
+        {
+          "id": 2,
+          "nome": "Produto B",
+          "preco": 99.90
+        }
+      ]
+    }
+  }
+}
