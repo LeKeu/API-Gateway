@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway.Host", "src\ApiGateway.Host\ApiGateway.Host.csproj", "{6FE78A57-EE93-4378-A87A-43D913F13362}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway.Host", "src\ApiGateway.Host\ApiGateway.Host.csproj", "{6FE78A57-EE93-4378-A87A-43D913F13362}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway.Core", "src\ApiGateway.Core\ApiGateway.Core.csproj", "{7AF0C9BB-AE53-441A-B267-D5BAE474F4FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway.Core", "src\ApiGateway.Core\ApiGateway.Core.csproj", "{7AF0C9BB-AE53-441A-B267-D5BAE474F4FF}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{543324CD-742E-4EA2-88FB-18078240C322}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway.Auth", "src\ApiGateway.Auth\ApiGateway.Auth.csproj", "{FF4D4FF8-6F8B-4E54-AD52-31EF34EC6FD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{543324CD-742E-4EA2-88FB-18078240C322}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{543324CD-742E-4EA2-88FB-18078240C322}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{543324CD-742E-4EA2-88FB-18078240C322}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF4D4FF8-6F8B-4E54-AD52-31EF34EC6FD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF4D4FF8-6F8B-4E54-AD52-31EF34EC6FD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF4D4FF8-6F8B-4E54-AD52-31EF34EC6FD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF4D4FF8-6F8B-4E54-AD52-31EF34EC6FD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
