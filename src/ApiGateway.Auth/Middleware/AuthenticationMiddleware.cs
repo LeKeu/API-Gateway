@@ -7,8 +7,10 @@ namespace ApiGateway.Auth.Middleware
 {
     public class AuthenticationMiddleware
     {
-        // Request → [RateLimiting] → [Auth] → [Cache] → YARP → Serviço
         /*
+        Request → [RateLimiting] → [Auth] → [Cache] → YARP → Serviço
+        essa ordem de sequências é definida pelo sequência de chamadas no program, executando na ordem que eu registrei no app.use...
+        
         _next é o próximo middleware na fila. quando eu chamo await _next(context), 
         é como se eu tivesse falando"pasosu nessa verificação, pode seguir pro próximo"
         se eu não chamar o _next o request para aqui 
