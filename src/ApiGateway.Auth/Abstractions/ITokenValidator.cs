@@ -1,6 +1,6 @@
 ﻿namespace ApiGateway.Auth.Abstractions
 {
-    internal interface ITokenValidator
+    public interface ITokenValidator
     {
         Task<TokenValidatorResult> ValidateAsync(string token);
     }
