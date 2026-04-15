@@ -17,12 +17,14 @@ namespace ApiGateway.Auth.Extensions
                 .AddJwtBearer("Bearer", options =>
                 {
                     options.Authority               = jwtOptions.Authority;
-                    options.Audience                = jwtOptions.Audience;
+                    //options.Audience                = jwtOptions.Audience;
+                    options.MetadataAddress         = jwtOptions.MetadataAddress;
                     options.RequireHttpsMetadata    = jwtOptions.RequireHttpsMetadata;
 
                     options.TokenValidationParameters = new()
                     {
                         ValidateIssuer              = true,
+                        ValidIssuer                 = jwtOptions.ValidIssuer,
                         ValidateAudience            = false,
                         ValidateLifetime            = true,
                         ValidateIssuerSigningKey    = true,
