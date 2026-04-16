@@ -1,4 +1,5 @@
-﻿using ApiGateway.Auth.Jwt;
+﻿using ApiGateway.Auth.Authorization;
+using ApiGateway.Auth.Jwt;
 using ApiGateway.Auth.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +22,18 @@ namespace ApiGateway.Auth.Extensions
                     options.MetadataAddress         = jwtOptions.MetadataAddress;
                     options.RequireHttpsMetadata    = jwtOptions.RequireHttpsMetadata;
 
+                    /*
+                    tive que adicionar o metadata e o validissuer (tanto aqui, quanto nojwt options quanto no appsettings) pq:
+                    ao fazer o teste 1 (de chamar o http://localhost:5000/api/produtos enviando access token, que deveria dar 200) dava 401. 
+                    isso pq o postman roda no windos w acessa o localhost para buscar o token, ent o token vem com o iss de lá
+                    só que, quando bate no gateway e faz a checagem desse iss, não funciona. pq, dentro do docker, o keycloak tá como http://keycloak:8080
+                    então ele busca as chaves públicas como http://keycloak:8080, e não como o iss que chegou
+
+                    aí essa modificação que eu fiz separou em duas responsabilidades:
+                    "MetadataAddress": "http://keycloak:8080/..."  -> onde buscar as chaves (dentro do Docker)
+                    "ValidIssuer":     "http://localhost:8080/..."  -> o que aceitar no iss do token (como o Postman vê)
+                    */
+
                     options.TokenValidationParameters = new()
                     {
                         ValidateIssuer              = true,
@@ -38,6 +51,30 @@ namespace ApiGateway.Auth.Extensions
                         */
                     };
                 });
+
+            /*
+            o YARP suporta vincular uma política de autorizaçãi diretamente a uma rota no appsetitngs
+            o fluxo ficaria assim dessa forma:
+            REquest com token -> auth valida a assinatura -> asp.net verifica política de rota -> YARP roteia
+
+            tipo: SE o token é válido mas o usuário não tem a role exigida pela rota, retorna 403 (forbidden. 401 é não idnetificado)
+
+            por isso aqui eu to setando os roles
+            */
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(GatewayPolicies.Reader, policy =>
+                    policy
+                        .RequireAuthenticatedUser()
+                        .RequireRole("reader", "admin"));
+
+                options.AddPolicy(GatewayPolicies.Admin, policy =>
+                    policy
+                        .RequireAuthenticatedUser()
+                        .RequireRole("admin"));
+
+            });
 
             services.AddAuthorization();
 
