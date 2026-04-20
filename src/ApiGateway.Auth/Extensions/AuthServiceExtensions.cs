@@ -1,9 +1,12 @@
 ﻿using ApiGateway.Auth.Authorization;
 using ApiGateway.Auth.Jwt;
 using ApiGateway.Auth.Middleware;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Security.Claims;
+using System.Text.Json;
 
 namespace ApiGateway.Auth.Extensions
 {
@@ -50,6 +53,58 @@ namespace ApiGateway.Auth.Extensions
                         ClockSkew                   = TimeSpan.FromSeconds(30) 
                         */
                     };
+
+                    /*
+                    SITUAÇÃO DE ERRO QUE ENCONTREI!
+                    mesmo um usuário com o role correto, retornava 403 no postman T-T
+                    a situação é que o keycloak coloca os roles aninhados dentro de um campo realm_access.roles
+
+                    quando o .net faz "requirerole("reader")", ele procura por um claim do tipo ClamTypes.Role e 
+                    não sabe que precisa mergulhar dentro de realm_access pra pegar os roles
+                    então o token pode até chegar válido, com um usuário com o role correto, mas o .net não consegue validar assim
+                    
+                    CORREÇÃO: mapear as roles do keycloak! eu digo pro jwtbearer extrair as roles de dentro de realm_access.roles
+                    com o evento OnTokenValidate, que acontece logo depois da validação do token
+                    ASSIM:
+                    */
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnTokenValidated = context =>
+                        {
+                            var identity = context.Principal?.Identity as ClaimsIdentity;
+                            if (identity is null) return Task.CompletedTask;
+
+                            //aqui eu to pegando o claim que vem junto com a string json
+                            var realmAccess = context.Principal?.FindFirst("realm_access")?.Value;
+
+                            if(realmAccess is null) return Task.CompletedTask;
+
+                            //to desserializzando o json e pegando os roles
+                            var parsed = JsonDocument.Parse(realmAccess);
+                            if(!parsed.RootElement.TryGetProperty("roles", out var rolesElement))
+                                return Task.CompletedTask;
+
+                            foreach (var role in rolesElement.EnumerateArray())
+                            {
+                                var roleValue = role.GetString();
+                                if (roleValue is not null)
+                                    identity.AddClaim(new Claim(ClaimTypes.Role, roleValue));
+                            }
+
+                            return Task.CompletedTask;
+                        }
+                    };
+
+                    /*
+                    +- como funciona o fluxo:
+                    - Ontokenvalidate roda -> adiciona claimtype roles = "reader"/"qlqr um" na identidade
+                    userauthorizathion checa a política da rota, que fala "ah, eu require esses roles: ..."
+                    asp.net vai procurar esses roles em claims na identidade
+                    e vai encontrar pq a gente adicionou no início
+                    aprova
+                    segue pro yarp
+                    */
                 });
 
             /*
