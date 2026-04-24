@@ -32,6 +32,8 @@ services:
     networks:
       - gateway-net
 
+  #eu tava tendo um problma com o keycloak que toda vez que eu fechava o vs e voltava, todas as configuracoes (client, role, user) eram
+  #apagadas e eu tinha que configurasr tudo dnv. isso eh pq eu nao tinha congigurado um volume nele
   keycloak:
     image: quay.io/keycloak/keycloak:23.0
     ports:
@@ -42,9 +44,14 @@ services:
     command: ["start-dev"]
     networks: 
       - gateway-net
+    volumes: #aqui
+      - keycloak_data:/opt/keycloak/data 
 
 networks:
   gateway-net: # por padrao cada ocntainer eh isolado. o bridge cria tipo uma rede virtual privaada onde todos os containers que estaoo nela consigam se comunicar
     driver: bridge
     #por isso eu escrevo "http://wiremock:8080" e nao "http://localhost:8080"
+
+volumes:
+  keycloak_data: #aqui, eu to criando um volume sem nada depois pois eu to deixando o proprio docker criar e gerenciar esse volume
 

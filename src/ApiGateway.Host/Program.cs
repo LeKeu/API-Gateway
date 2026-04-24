@@ -11,6 +11,7 @@ var app = builder.Build();
 
 app.UseGatewayAuthentication();//colocar antes do yarp!!!
 
+
 app.MapReverseProxy();
 
 app.Run();
