@@ -1,4 +1,4 @@
-﻿namespace ApiGateway.Auth.Abstractions
+﻿namespace ApiGateway.Core.Abstractions
 {
     public interface ITokenValidator
     {
