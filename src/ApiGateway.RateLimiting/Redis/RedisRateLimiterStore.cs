@@ -3,7 +3,7 @@ using StackExchange.Redis;
 
 namespace ApiGateway.RateLimiting.Redis
 {
-    public class RedisRateLimitStore : IRateLimitStore
+    public class RedisRateLimiterStore : IRateLimiterStore
     {
         /*
         o IRateLimiterStore  é uma abstração que diz como armazenar e recuperar os ocntadores, sem dizer onde
@@ -18,7 +18,7 @@ namespace ApiGateway.RateLimiting.Redis
         o rate limit é um porteiro que conta quantas vexes um cliente bateu na porta, basicamente
         se bateu demais num intervalo de tempo, ele barra com 429 too many requests
         */
-        public RedisRateLimitStore(IConnectionMultiplexer redis)
+        public RedisRateLimiterStore(IConnectionMultiplexer redis)
         {
             _db = redis.GetDatabase();
             /*

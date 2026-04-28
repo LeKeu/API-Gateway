@@ -1,6 +1,6 @@
 ﻿namespace ApiGateway.Core.Abstractions
 {
-    public interface IRateLimitStore
+    public interface IRateLimiterStore
     {
         /*
         aqui ele responde essa pergunta: quantas vezes esse cliente já bateu aqui nessa janela de tempo?
