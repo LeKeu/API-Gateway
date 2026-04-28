@@ -21,8 +21,9 @@ namespace ApiGateway.RateLimiting.Middleware
             _logger = logger;
         }
 
-        public async Task InvokeAync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
+            //aqui eu to pegando o ip e path (/produto, /pedido) do request par montar a chave
             var clientIp = context.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
             var path = context.Request.Path.Value ?? "/";
 
