@@ -11,12 +11,14 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+    <PackageReference Include="StackExchange.Redis" Version="2.12.14" />
     <PackageReference Include="Yarp.ReverseProxy" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
 	  <ProjectReference Include="..\ApiGateway.Core\ApiGateway.Core.csproj" />
 	  <ProjectReference Include="..\ApiGateway.Auth\ApiGateway.Auth.csproj" />
+	  <ProjectReference Include="..\ApiGateway.RateLimiting\ApiGateway.RateLimiting.csproj" />
   </ItemGroup>
 
 </Project>
