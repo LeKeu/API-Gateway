@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+	  <ProjectReference Include="..\ApiGateway.Caching\ApiGateway.Caching.csproj" />
 	  <ProjectReference Include="..\ApiGateway.Core\ApiGateway.Core.csproj" />
 	  <ProjectReference Include="..\ApiGateway.Auth\ApiGateway.Auth.csproj" />
 	  <ProjectReference Include="..\ApiGateway.RateLimiting\ApiGateway.RateLimiting.csproj" />
