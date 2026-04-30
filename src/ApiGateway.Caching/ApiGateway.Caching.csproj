@@ -9,10 +9,13 @@
   <ItemGroup>
     <Folder Include="Middleware\" />
     <Folder Include="Extensions\" />
-    <Folder Include="Redis\" />
 
 	  <FrameworkReference Include="Microsoft.AspNetCore.App" />
 
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StackExchange.Redis" Version="2.12.14" />
   </ItemGroup>
 
   <ItemGroup>
