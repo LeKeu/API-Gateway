@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Middleware\" />
     <Folder Include="Extensions\" />
 
 	  <FrameworkReference Include="Microsoft.AspNetCore.App" />

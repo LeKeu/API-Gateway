@@ -85,6 +85,10 @@ namespace ApiGateway.Caching.Middleware
                 context.Response.ContentType = "application/json";
                 context.Response.Headers["X-Cache"] = "HIT";
 
+                /*
+                aqui eu t escrevendo o ocnteúdo diretamente no stream de resposta HTTP e enviando pro cliente, já que é um cachehit
+                o postman vai tá recebendo o mesmo json que ele receberia se fosse pelo wiremock, só que n sabe que veio fdo cache
+                */
                 await context.Response.WriteAsync(cached);
                 return;
             }
@@ -114,8 +118,37 @@ namespace ApiGateway.Caching.Middleware
 
             try
             {
+                /*
+                IMPORTANTE!! eu raciocinei errado sobre isso! sobre esse await _next
+                pelo que eu saiba, o await _next chama o próximo middleware na fila, oks? oks
+                mas esse auqi é diferente! quando eu cxhamo ele DENTRO DE UM TRY eu to pausando a execução do middleware e deixando
+                toda  a cadeia sgeuinte rodar até o fim
+                só depois que tudo termina é que a linha sgeuinte dele executa
+                ent o SEEK e o READTOASYNC rodam depois dque o yarp já temrinou de escrever
+                */
+                // !!!!!!!!!!!!!!!!!!!!!!!
                 await _next(context);
+                // !!!!!!!!!!!!!!!!!!!!!!!
 
+                /*
+                como que o seek e o readtoasync funcionam??
+                ent tá
+                o memorstream tem um CURSOR INTERNO, uma posição que indica onde a próxima leitura ou escrita vai ser
+                quando o yarp escreve nele, o cursor avança até o final
+
+                depois qe o yarp escreveu:
+                [J][S][O][N][ ][d][o][s][ ][p][r][o][d][u][t][o][s]
+                                                                     |
+                                                               cursor aqui -final)
+
+                ent., se eu tentasse ler agora o streramreader comecaria no atual que já tá no final e ia ler 0 bytes
+                o SEEK(0, seekorigin.begin) move o cursor de volta pro início:
+                [J][S][O][N][ ][d][o][s][ ][p][r][o][d][u][t][o][s]
+                 |
+                cursor aqui agora -início)
+
+                aí o READTOENDASYNC lê do início até o fim e eu vou ter o json compleyo
+                */
                 memoryStream.Seek(0, SeekOrigin.Begin);//to lendo o que o yarp escreveu
                 var responseBody = await new StreamReader(memoryStream).ReadToEndAsync();
 
@@ -133,6 +166,7 @@ namespace ApiGateway.Caching.Middleware
 
                 /*
                 copiando a resposta captirada para o stream real do cliente 
+                aqui o seek é chamado dnv pq o yarp escreveou na stream, ent ele tem que ler dnv
                 */
                 memoryStream.Seek(0, SeekOrigin.Begin);
                 await memoryStream.CopyToAsync(originalBody);
