@@ -24,6 +24,11 @@ namespace ApiGateway.Caching.Middleware
           YARP _> context.Response.body (stream do cliente) -> cliente recebe -> não leio nada
         Com interceptação:
           YARP -> memoryStream (meu) -> leio -> guarda no Redis → copia pro cliente
+
+        MAS ESSA SUBSTITUIÇÃO É TIPO UMA GAMBIARRA??
+        pelo uq eu li, é uma técnica legítima chamada de RESPONSE BUFFERING!!
+        o aspnet foi projetado pra permitir que essa "troca" ocorra, o campo context.response.body 
+        é público até para que middlewares possam susbtrituir
         */
         private readonly RequestDelegate _next;
         private readonly ICacheProvider _cache;
@@ -54,7 +59,7 @@ namespace ApiGateway.Caching.Middleware
             aqui eu to verificando se a rota tá ocnfigurada pra cache 
             se não tiver rota configurada pra cache, pula essa parte
             */
-            var path = context.Request.Path.Value ?? "/";
+            var path = context.Request.Path.Value ?? "/"; //ex: "/api/produtos"
             if(!_options.Routes.TryGetValue(path, out var routeOptions))
             {
                 await _next(context);
@@ -66,7 +71,7 @@ namespace ApiGateway.Caching.Middleware
             
             */
             var query = context.Request.QueryString.Value ?? string.Empty;
-            var key = $"cache:GET?{path}:{query}";
+            var key = $"cache:GET:{path}:{query}"; // exempl: "cache:GET:/api/produtos:?ativo=true&pagina=2"
 
             /*
              aqui é uma situação de cache hit!!
@@ -74,7 +79,7 @@ namespace ApiGateway.Caching.Middleware
             var cached = await _cache.GetAsync(key);
             if(cached is not null)
             {
-                _logger.LogInformation($"Cache hit. Key: {key}");
+                _logger.LogInformation("Cache hit. Key: {Key}", key);
 
                 context.Response.StatusCode = StatusCodes.Status200OK;
                 context.Response.ContentType = "application/json";
@@ -87,10 +92,23 @@ namespace ApiGateway.Caching.Middleware
             /*
             aqui seria uma situação de cache miss!! 
             */
-            _logger.LogInformation($"Cache miss. Key: {key}");
+            _logger.LogInformation("Cache miss. Key: {Key}", key);
 
             var originalBody = context.Request.Body;
 
+            /*
+            um questionamento sobre isso abaixo é, com um fluxo muito alto, teria como isso sofrer uma sobrecarga ou similar?
+            pq, querendo ou não, cada request que passa cria um mempry stream em memória. ent se passassem 1000 requests simultãneos, eu teria 1000 memorystreams, non?
+
+            pelo que eu entendi, para respostas pequenas (como o json de lista de produtos) o impacto é bem pichuto
+            mas pra respostas maiores (arquivos, relatórios pesados etc), pode ser um problemãlo
+
+            nesse caso, o await using resolver meio que metade disso, pq ele garante que o memory stream é descartado imediatamente quando o block try termina
+            ent ele libera memória sem esperar o garbage collector, pelo menos.
+            mas ainda assim a meória tá ocupada durante a execução do código
+
+            isso é um dos motivos que eu limito o cache a rotas específicas e não fico armazenando tudo nele
+            */
             await using var memoryStream = new MemoryStream();
             context.Response.Body = memoryStream; //o yarp vai escrever aqui!!
 
@@ -110,7 +128,7 @@ namespace ApiGateway.Caching.Middleware
                     await _cache.SetAsync(key, responseBody, ttl);
 
                     context.Response.Headers["X-Cache"] = "MISS";
-                    _logger.LogInformation($"Resposta armazenada no cache. Key: {key}, TTL: {ttl}s");
+                    _logger.LogInformation("Resposta armazenada no cache. Key: {Key}, TTL: {Ttl}s", key, routeOptions.TtlSeconds);
                 }
 
                 /*
