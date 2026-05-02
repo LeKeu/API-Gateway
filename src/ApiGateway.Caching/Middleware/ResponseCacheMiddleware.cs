@@ -80,6 +80,7 @@ namespace ApiGateway.Caching.Middleware
             if(cached is not null)
             {
                 _logger.LogInformation("Cache hit. Key: {Key}", key);
+                Console.WriteLine("CACHE HIT");
 
                 context.Response.StatusCode = StatusCodes.Status200OK;
                 context.Response.ContentType = "application/json";
@@ -97,6 +98,7 @@ namespace ApiGateway.Caching.Middleware
             aqui seria uma situação de cache miss!! 
             */
             _logger.LogInformation("Cache miss. Key: {Key}", key);
+            Console.WriteLine("CACHE MISS");
 
             var originalBody = context.Request.Body;
 

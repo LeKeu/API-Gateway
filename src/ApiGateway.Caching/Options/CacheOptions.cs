@@ -13,4 +13,5 @@ namespace ApiGateway.Caching.Options
     public class RouteCacheOptions()
     {
         public int TtlSeconds { get; set; } = 60;
+    }
 }
