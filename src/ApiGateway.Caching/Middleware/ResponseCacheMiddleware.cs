@@ -100,7 +100,7 @@ namespace ApiGateway.Caching.Middleware
             _logger.LogInformation("Cache miss. Key: {Key}", key);
             Console.WriteLine("CACHE MISS");
 
-            var originalBody = context.Request.Body;
+            var originalBody = context.Response.Body;
 
             /*
             um questionamento sobre isso abaixo é, com um fluxo muito alto, teria como isso sofrer uma sobrecarga ou similar?
