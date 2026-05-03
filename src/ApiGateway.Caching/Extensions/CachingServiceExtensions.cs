@@ -1,4 +1,5 @@
-﻿using ApiGateway.Caching.Options;
+﻿using ApiGateway.Caching.Middleware;
+using ApiGateway.Caching.Options;
 using ApiGateway.Caching.Redis;
 using ApiGateway.Core.Abstractions;
 using Microsoft.AspNetCore.Builder;
@@ -32,7 +33,7 @@ namespace ApiGateway.Caching.Extensions
 
         public static IApplicationBuilder UseGatewayCaching(this IApplicationBuilder app)
         {
-            app.UseMiddleware<ResponseCachingMiddleware>();
+            app.UseMiddleware<ResponseCacheMiddleware>();
             return app;
         }
     }

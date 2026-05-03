@@ -1,8 +1,10 @@
-﻿using ApiGateway.Caching.Options;
+﻿using ApiGateway.Caching.Models;
+using ApiGateway.Caching.Options;
 using ApiGateway.Core.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace ApiGateway.Caching.Middleware
 {
@@ -82,15 +84,22 @@ namespace ApiGateway.Caching.Middleware
                 _logger.LogInformation("Cache hit. Key: {Key}", key);
                 Console.WriteLine("CACHE HIT");
 
+                var cachedResponse = JsonSerializer.Deserialize<CachedResponse>(cached)!;
+
                 context.Response.StatusCode = StatusCodes.Status200OK;
-                context.Response.ContentType = "application/json";
+                context.Response.ContentType = cachedResponse.ContentType;
                 context.Response.Headers["X-Cache"] = "HIT";
+
+                //restaura Content-Encoding se a resposta original era comprimida
+                if (!string.IsNullOrEmpty(cachedResponse.ContentEncoding))
+                    context.Response.Headers["Content-Encoding"] = cachedResponse.ContentEncoding;
+
 
                 /*
                 aqui eu t escrevendo o ocnteúdo diretamente no stream de resposta HTTP e enviando pro cliente, já que é um cachehit
                 o postman vai tá recebendo o mesmo json que ele receberia se fosse pelo wiremock, só que n sabe que veio fdo cache
                 */
-                await context.Response.WriteAsync(cached);
+                await context.Response.Body.WriteAsync(cachedResponse.Body);
                 return;
             }
 
@@ -150,17 +159,28 @@ namespace ApiGateway.Caching.Middleware
                 cursor aqui agora -início)
 
                 aí o READTOENDASYNC lê do início até o fim e eu vou ter o json compleyo
-                */
+
                 memoryStream.Seek(0, SeekOrigin.Begin);//to lendo o que o yarp escreveu
                 var responseBody = await new StreamReader(memoryStream).ReadToEndAsync();
+                */
+
+                var responseBytes = memoryStream.ToArray();
 
                 /*
                 aqui eu só vou estar armazenando o cache se a resposta foi bem sucedida 
                 */
-                if(context.Response.StatusCode == StatusCodes.Status200OK && !string.IsNullOrEmpty(responseBody))
+                if(context.Response.StatusCode == StatusCodes.Status200OK && responseBytes.Length > 0)
                 {
+                    var cachedResponse = new CachedResponse(
+                        Body: responseBytes,
+                        ContentType: context.Response.ContentType ?? "application/json",
+                        ContentEncoding: context.Response.Headers["Content-Encoding"].ToString()
+                    );
+
+                    var serielized = JsonSerializer.SerializeToUtf8Bytes(cachedResponse);
                     var ttl = TimeSpan.FromSeconds(routeOptions.TtlSeconds);
-                    await _cache.SetAsync(key, responseBody, ttl);
+
+                    await _cache.SetAsync(key, serielized, ttl);
 
                     context.Response.Headers["X-Cache"] = "MISS";
                     _logger.LogInformation("Resposta armazenada no cache. Key: {Key}, TTL: {Ttl}s", key, routeOptions.TtlSeconds);

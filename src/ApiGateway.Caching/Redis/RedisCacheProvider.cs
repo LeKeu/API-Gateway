@@ -27,7 +27,7 @@ namespace ApiGateway.Caching.Redis
         A ordem dos Add* no program importa!!
         */
 
-        public async Task<string?> GetAsync(string key)
+        public async Task<byte[]?> GetAsync(string key)
         {
             try
             {
@@ -35,7 +35,7 @@ namespace ApiGateway.Caching.Redis
 
                 //o rediso tem uma conversão implícita para string? (afirmação ein)
                 //ent ele vai retornar null se a chave não existe, que seria o cache miss!
-                return value.HasValue ? value.ToString() : null;
+                return value.HasValue ? (byte[])value : null;
                 /*
                 OUTRO QUESTIONAMENTO! PQ HASVALUE E NÃO IS NULL??
                 a var value é um RedisValue, que é uma struct (um tipo valor, não referência)
@@ -49,11 +49,9 @@ namespace ApiGateway.Caching.Redis
                 _logger.LogWarning(ex, $"Cache indisponível ao ler a chave{key}. Seguindo sem chave.");
                 return null;
             }
-
-            
         }
 
-        public async Task SetAsync(string key, string value, TimeSpan ttl)
+        public async Task SetAsync(string key, byte[] value, TimeSpan ttl)
         {
             try
             {
