@@ -1,9 +1,11 @@
 ﻿using ApiGateway.Caching.Models;
 using ApiGateway.Caching.Options;
 using ApiGateway.Core.Abstractions;
+using ApiGateway.Observability.Metrics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace ApiGateway.Caching.Middleware
@@ -36,13 +38,18 @@ namespace ApiGateway.Caching.Middleware
         private readonly ICacheProvider _cache;
         private readonly CacheOptions _options;
         private readonly ILogger<ResponseCacheMiddleware> _logger;
+        private readonly GatewayMetrics _metrics;
 
-        public ResponseCacheMiddleware(RequestDelegate next, ICacheProvider cache, IOptions<CacheOptions> options, ILogger<ResponseCacheMiddleware> logger)
+        public ResponseCacheMiddleware(
+            RequestDelegate next, ICacheProvider cache, 
+            IOptions<CacheOptions> options, ILogger<ResponseCacheMiddleware> logger,
+            GatewayMetrics metrics)
         {
             _next = next;
             _cache = cache;
             _options = options.Value;
             _logger = logger;
+            _metrics = metrics;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -84,6 +91,8 @@ namespace ApiGateway.Caching.Middleware
                 _logger.LogInformation("Cache hit. Key: {Key}", key);
                 Console.WriteLine("CACHE HIT");
 
+                _metrics.CacheHits.Add(1, new TagList { { "path", path } });
+
                 var cachedResponse = JsonSerializer.Deserialize<CachedResponse>(cached)!;
 
                 context.Response.StatusCode = StatusCodes.Status200OK;
@@ -108,6 +117,9 @@ namespace ApiGateway.Caching.Middleware
             */
             _logger.LogInformation("Cache miss. Key: {Key}", key);
             Console.WriteLine("CACHE MISS");
+
+            _metrics.CacheMisses.Add(1, new TagList { { "path", path } });
+
 
             var originalBody = context.Response.Body;
 

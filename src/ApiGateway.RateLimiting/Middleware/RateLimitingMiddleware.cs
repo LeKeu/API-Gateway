@@ -1,4 +1,5 @@
 ﻿using ApiGateway.Core.Abstractions;
+using ApiGateway.Observability.Metrics;
 using ApiGateway.RateLimiting.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -12,13 +13,18 @@ namespace ApiGateway.RateLimiting.Middleware
         private readonly IRateLimiterStore _store;
         private readonly RateLimitOptions _options;
         private readonly ILogger<RateLimitingMiddleware> _logger;
+        private readonly GatewayMetrics _metrics;
 
-        public RateLimitingMiddleware(RequestDelegate next, IRateLimiterStore store, IOptions<RateLimitOptions> options, ILogger<RateLimitingMiddleware> logger)
+        public RateLimitingMiddleware(
+            RequestDelegate next, IRateLimiterStore store, 
+            IOptions<RateLimitOptions> options, ILogger<RateLimitingMiddleware> logger,
+            GatewayMetrics metrics)
         {
             _next = next;
             _store = store;
             _options = options.Value;
             _logger = logger;
+            _metrics = metrics;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -39,6 +45,8 @@ namespace ApiGateway.RateLimiting.Middleware
             if(count > _options.RequestsPerWindow)
             {
                 _logger.LogWarning($"Rate limit excedido. Cliente: {clientIp}, Path: {path}, Count: {count}");
+
+                _metrics.RateLimitsHits.Add(1); // ver se é somente isso
 
                 context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
                 context.Response.Headers["Retry-After"] = _options.WindowSeconds.ToString();
