@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway.Auth", "src\ApiG
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway.RateLimiting", "src\ApiGateway.RateLimiting\ApiGateway.RateLimiting.csproj", "{50945A6B-9D53-4DAD-85F0-62068F4E8FDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway.Caching", "src\ApiGateway.Caching\ApiGateway.Caching.csproj", "{1561D87A-BD1A-43CA-B4A7-8CCB692AEEA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway.Caching", "src\ApiGateway.Caching\ApiGateway.Caching.csproj", "{1561D87A-BD1A-43CA-B4A7-8CCB692AEEA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway.Observability", "src\ApiGateway.Observability\ApiGateway.Observability.csproj", "{994D6364-D819-4B94-92C3-071A7FDEA2E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{1561D87A-BD1A-43CA-B4A7-8CCB692AEEA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1561D87A-BD1A-43CA-B4A7-8CCB692AEEA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1561D87A-BD1A-43CA-B4A7-8CCB692AEEA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{994D6364-D819-4B94-92C3-071A7FDEA2E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{994D6364-D819-4B94-92C3-071A7FDEA2E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{994D6364-D819-4B94-92C3-071A7FDEA2E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{994D6364-D819-4B94-92C3-071A7FDEA2E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

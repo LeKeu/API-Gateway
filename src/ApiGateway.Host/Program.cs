@@ -1,10 +1,12 @@
 using ApiGateway.Auth.Extensions;
 using ApiGateway.Caching.Extensions;
+using ApiGateway.Observability.Extensions;
 using ApiGateway.RateLimiting.Extensions;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddGatewayObservability();
 builder.Services.AddGatewayAuthentication(builder.Configuration);
 builder.Services.AddGatewayRateLimiting(builder.Configuration);
 builder.Services.AddGatewayCaching(builder.Configuration);
@@ -14,6 +16,7 @@ builder.Services.AddReverseProxy()
 
 var app = builder.Build();
 
+app.UseGatewayObservability();
 app.UseGatewayRateLimiting();// primeiro!! rate limit antes de autenticar
 app.UseGatewayAuthentication();//segundo! autentyica quem passou
 app.UseGatewayCaching();// parte do cache!!
