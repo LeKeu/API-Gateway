@@ -131,8 +131,6 @@ namespace ApiGateway.Auth.Extensions
 
             });
 
-            services.AddAuthorization();
-
             return services;
         }
 

@@ -51,6 +51,8 @@ namespace ApiGateway.RateLimiting.Middleware
                 });
                 return;
             }
+
+            await _next(context); // !!!!!!!!!!!
         }
     }
 }

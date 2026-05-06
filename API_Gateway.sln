@@ -11,7 +11,9 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway.Auth", "src\ApiGateway.Auth\ApiGateway.Auth.csproj", "{FF4D4FF8-6F8B-4E54-AD52-31EF34EC6FD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway.RateLimiting", "src\ApiGateway.RateLimiting\ApiGateway.RateLimiting.csproj", "{50945A6B-9D53-4DAD-85F0-62068F4E8FDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway.RateLimiting", "src\ApiGateway.RateLimiting\ApiGateway.RateLimiting.csproj", "{50945A6B-9D53-4DAD-85F0-62068F4E8FDD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway.Caching", "src\ApiGateway.Caching\ApiGateway.Caching.csproj", "{1561D87A-BD1A-43CA-B4A7-8CCB692AEEA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{50945A6B-9D53-4DAD-85F0-62068F4E8FDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50945A6B-9D53-4DAD-85F0-62068F4E8FDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50945A6B-9D53-4DAD-85F0-62068F4E8FDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1561D87A-BD1A-43CA-B4A7-8CCB692AEEA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1561D87A-BD1A-43CA-B4A7-8CCB692AEEA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1561D87A-BD1A-43CA-B4A7-8CCB692AEEA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1561D87A-BD1A-43CA-B4A7-8CCB692AEEA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
